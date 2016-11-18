@@ -1,0 +1,39 @@
+{
+  "name": "react-async-await",
+  "version": "0.0.1",
+  "description": "",
+  "main": "lib/asyncAwait.js",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "rm -rf lib && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jomaxx/react-async-await.git"
+  },
+  "author": "Jo Maxx Blake <jo.maxx.blake@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jomaxx/react-async-await/issues"
+  },
+  "homepage": "https://github.com/jomaxx/react-async-await#readme",
+  "files": [
+    "lib"
+  ],
+  "devDependencies": {
+    "babel-preset-es2015-rollup": "^1.2.0",
+    "babel-preset-react": "^6.16.0",
+    "react": "^15.4.0",
+    "rollup": "^0.36.3",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-watch": "^2.5.0"
+  },
+  "peerDependencies": {
+    "react": "15.x"
+  },
+  "dependencies": {
+    "hoist-non-react-statics": "^1.2.0"
+  }
+}
