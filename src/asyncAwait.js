@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import hoistNonReactStatic from 'hoist-non-react-statics';
-import { makeCancelable, isPromise } from './utils';
+import { makeCancelable, isPromise, isCancelable, noop } from './utils';
+
+export { makeCancelable, isCancelable } from './utils';
 
 export default function asyncAwait(
   mapPropsToPromise,
@@ -18,7 +20,7 @@ export default function asyncAwait(
           error: undefined,
         };
 
-        this.cancel = () => {};
+        this.cancel = noop;
 
         this.update = () => {
           this.updatePromise(mapPropsToPromise(this.props));
@@ -44,10 +46,24 @@ export default function asyncAwait(
       updatePromise(nextPromise) {
         this.cancel();
 
+        if (isCancelable(nextPromise)) {
+          this.updatePromise(nextPromise.promise);
+
+          this.cancel = (cancel => () => {
+            nextPromise.cancel();
+            cancel();
+          })(this.cancel);
+
+          return;
+        }
+
         if (isPromise(nextPromise)) {
           const { cancel, promise } = makeCancelable(nextPromise);
 
-          this.cancel = cancel;
+          this.cancel = () => {
+            cancel();
+            this.cancel = noop;
+          };
 
           this.setState({
             waiting: true,
@@ -59,13 +75,15 @@ export default function asyncAwait(
             result => this.setState({ result, waiting: false }),
             error => !error.canceled && this.setState({ error, waiting: false })
           );
-        } else {
-          this.setState({
-            waiting: false,
-            result: nextPromise,
-            error: undefined,
-          });
+
+          return;
         }
+
+        this.setState({
+          waiting: false,
+          result: nextPromise,
+          error: undefined,
+        });
       }
 
       render() {

@@ -13,4 +13,10 @@ export const makeCancelable = (promise) => {
   };
 };
 
-export const isPromise = (promise = {}) => typeof promise.then === 'function';
+export const isFunction = (fn) => typeof fn === 'function';
+
+export const isPromise = (promise = {}) => isFunction(promise.then);
+
+export const isCancelable = ({ cancel, promise } = {}) => isFunction(cancel) && isPromise(promise);
+
+export const noop = () => {};
