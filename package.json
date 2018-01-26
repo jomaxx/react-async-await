@@ -1,6 +1,6 @@
 {
   "name": "react-async-await",
-  "version": "1.0.0-1",
+  "version": "1.0.0-2",
   "description": "Async component that waits on promises to resolve!",
   "main": "lib/index.js",
   "module": "lib/module.js",
