@@ -1,6 +1,9 @@
 # react-async-await
 
+Async component that waits on promises to resolve!
+
 ### Install
+
 ```
 npm i react-async-await react --save
 ```
@@ -10,34 +13,47 @@ npm i react-async-await react --save
 ```js
 import React from 'react';
 import { render } from 'react-dom';
-import asyncAwait from 'react-async-await';
+import Async from 'react-async-await';
 
-const fetchUser = (userId) => fetch(`/api/users/${userId}`).then(response => response.json());
+class User extends React.Component {
+  componentWillMount() {
+    this.setState({
+      promise: undefined,
+    });
+  }
 
-const mapPropsToPromise = ({ id }) => fetchUser(id);
+  componentWillMount() {
+    this.setState({
+      promise: fetch(`/api/users/${this.props.id}`).then(r => r.json()),
+    });
+  }
 
-const shouldUpdatePromise = (props, prevProps) => props.id !== prevProps.id;
+  componentDidUpdate(prevProps) {
+    // if id changes then we have to load the new user
+    if (prevProps.id !== this.props.id) {
+      this.componentWillMount();
+    }
+  }
 
-function User({
-  waiting,
-  result: user,
-  error,
-  update, // update the promise
-}) {
-  if (waiting) return <div>Loading...</div>;
-  if (error) return <div>{error.message}</div>;
-  if (user) return <div>Hello {user.name}</div>;
-  return null;
+  // If this.state.promise rejects then Async component will throw error.
+  // Error Boundaries allow you to recover from thrown errors.
+  // https://reactjs.org/docs/error-boundaries.html
+  componentDidCatch(error) {
+    this.setState({ error });
+  }
+
+  render() {
+    if (this.state.error) {
+      return <div>An error occurred!</div>;
+    }
+
+    return (
+      <Async await={this.state.promise}>
+        {user => (user ? <div>Hello {user.name}!</div> : <div>Loading...</div>)}
+      </Async>
+    );
+  }
 }
 
-const AsyncUser = asyncAwait(
-  mapPropsToPromise,
-  shouldUpdatePromise,
-  false // defer - when true won't mapPropsToPromise on componentWillMount (default = false)
-)(User);
-
-render(
-  <AsyncUser id={1} />,
-  document.getElementById('root')
-);
+render(<User id={1} />, document.getElementById('root'));
 ```

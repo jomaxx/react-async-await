@@ -1,13 +1,15 @@
 {
   "name": "react-async-await",
   "version": "0.1.0",
-  "description": "",
-  "main": "lib/asyncAwait.js",
+  "description": "Async component that waits on promises to resolve!",
+  "main": "index.js",
+  "module": "module.js",
   "scripts": {
-    "build": "rollup -c",
-    "watch": "rollup -c -w",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "rm -rf lib && npm run build"
+    "prebuild": "rm -rf lib",
+    "build": "rollup -c config/rollup.js",
+    "test": "NODE_ENV=test jest",
+    "prepublishOnly": "npm run build",
+    "precommit": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -19,21 +21,35 @@
     "url": "https://github.com/jomaxx/react-async-await/issues"
   },
   "homepage": "https://github.com/jomaxx/react-async-await#readme",
-  "files": [
-    "lib"
-  ],
-  "devDependencies": {
-    "babel-preset-es2015-rollup": "^1.2.0",
-    "babel-preset-react": "^6.16.0",
-    "react": "^15.4.0",
-    "rollup": "^0.36.3",
-    "rollup-plugin-babel": "^2.6.1",
-    "rollup-watch": "^2.5.0"
+  "files": ["lib"],
+  "babel": {
+    "presets": ["./config/babel.js"]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "lint-staged": {
+    "*.{js,md,json}": ["prettier --write", "git add"],
+    "yarn.lock": ["git rm --cached"]
   },
   "peerDependencies": {
-    "react": "15.x"
+    "react": "16.x"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "husky": "^0.14.3",
+    "jest": "^22.1.4",
+    "lint-staged": "^6.0.1",
+    "prettier": "^1.10.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "rollup": "^0.55.0",
+    "rollup-plugin-babel": "^3.0.3"
   },
   "dependencies": {
-    "hoist-non-react-statics": "^1.2.0"
+    "babel-preset-react": "^6.24.1"
   }
 }
