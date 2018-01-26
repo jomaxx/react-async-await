@@ -2,8 +2,8 @@
   "name": "react-async-await",
   "version": "1.0.0-0",
   "description": "Async component that waits on promises to resolve!",
-  "main": "index.js",
-  "module": "module.js",
+  "main": "lib/index.js",
+  "module": "lib/module.js",
   "scripts": {
     "prebuild": "rm -rf lib",
     "build": "rollup -c config/rollup.js",
