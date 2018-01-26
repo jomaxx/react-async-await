@@ -9,6 +9,10 @@ afterEach(() => {
   ReactDOM.unmountComponentAtNode(mountNode);
 });
 
+test('renders', () => {
+  expect(() => mount(<Async />)).not.toThrowError();
+});
+
 test('resolves promise', done => {
   const values = [true, undefined];
 

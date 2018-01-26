@@ -47,4 +47,8 @@ class Async extends React.Component {
   }
 }
 
+Async.defaultProps = {
+  children: () => null,
+};
+
 export default Async;
