@@ -2,54 +2,45 @@
   "name": "react-async-await",
   "version": "1.0.0-2",
   "description": "Async component that waits on promises to resolve!",
-  "main": "lib/index.js",
-  "module": "lib/module.js",
-  "scripts": {
-    "prebuild": "rm -rf lib",
-    "build": "rollup -c config/rollup.js",
-    "test": "NODE_ENV=test jest",
-    "prepublishOnly": "npm run build",
-    "precommit": "lint-staged"
-  },
+  "main": "lib/react-async-await.js",
+  "module": "lib/react-async-await.es.js",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jomaxx/react-async-await.git"
   },
   "author": "Jo Maxx Blake <jo.maxx.blake@gmail.com>",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jomaxx/react-async-await/issues"
   },
   "homepage": "https://github.com/jomaxx/react-async-await#readme",
   "files": ["lib"],
-  "babel": {
-    "presets": ["./config/babel.js"]
-  },
-  "prettier": {
-    "singleQuote": true,
-    "trailingComma": "all"
+  "scripts": {
+    "prebuild": "rm -rf lib",
+    "test": "jest -ci",
+    "build": "rollup -c",
+    "precommit": "lint-staged",
+    "prepublishOnly": "yarn build && yarn test"
   },
   "lint-staged": {
-    "*.{js,md,json}": ["prettier --write", "git add"],
+    "*.{js,json,md}": ["prettier --write", "git add"],
     "yarn.lock": ["git rm --cached"]
+  },
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "husky": "^0.14.3",
+    "jest": "^22.4.2",
+    "lint-staged": "^7.0.0",
+    "prettier": "^1.11.1",
+    "react": "^16.3.0-alpha.1",
+    "react-dom": "^16.3.0-alpha.1",
+    "rollup": "^0.56.5",
+    "rollup-plugin-babel": "^3.0.3"
   },
   "peerDependencies": {
     "react": "16.x"
-  },
-  "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "husky": "^0.14.3",
-    "jest": "^22.1.4",
-    "lint-staged": "^6.0.1",
-    "prettier": "^1.10.2",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "rollup": "^0.55.0",
-    "rollup-plugin-babel": "^3.0.3"
-  },
-  "dependencies": {
-    "babel-preset-react": "^6.24.1"
   }
 }

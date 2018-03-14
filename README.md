@@ -5,26 +5,26 @@ Async component that waits on promises to resolve!
 ### Install
 
 ```
-npm i react-async-await react --save
+yarn add react-async-await react
 ```
 
 ### Basic Usage
 
 ```js
-import React from 'react';
-import { render } from 'react-dom';
-import Async from 'react-async-await';
+import React from "react";
+import { render } from "react-dom";
+import Async from "react-async-await";
 
 class User extends React.Component {
   componentWillMount() {
     this.setState({
-      promise: undefined,
+      promise: undefined
     });
   }
 
   componentWillMount() {
     this.setState({
-      promise: fetch(`/api/users/${this.props.id}`).then(r => r.json()),
+      promise: fetch(`/api/users/${this.props.id}`).then(r => r.json())
     });
   }
 
@@ -55,5 +55,5 @@ class User extends React.Component {
   }
 }
 
-render(<User id={1} />, document.getElementById('root'));
+render(<User id={1} />, document.getElementById("root"));
 ```
