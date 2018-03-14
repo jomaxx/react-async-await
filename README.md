@@ -13,31 +13,33 @@ yarn add react-async-await react
 ```js
 import React from "react";
 import { render } from "react-dom";
-import Async from "react-async-await";
+import { Async } from "react-async-await";
+import memoize from "lodash/memoize";
+
+// will return same promise when passed same id
+// @see https://lodash.com/docs/4.17.5#memoize
+const getUser = memoize(id =>
+  fetch(`/api/users/${this.props.id}`).then(response => response.json())
+);
 
 class User extends React.Component {
   componentWillMount() {
     this.setState({
-      promise: undefined
+      error: undefined
     });
   }
 
-  componentWillMount() {
-    this.setState({
-      promise: fetch(`/api/users/${this.props.id}`).then(r => r.json())
-    });
-  }
-
-  componentDidUpdate(prevProps) {
-    // if id changes then we have to load the new user
-    if (prevProps.id !== this.props.id) {
-      this.componentWillMount();
+  componentWillReceiveProps(nextProps) {
+    if (this.props.id !== nextProps.id) {
+      this.setState({
+        error: undefined
+      });
     }
   }
 
   // If this.state.promise rejects then Async component will throw error.
   // Error Boundaries allow you to recover from thrown errors.
-  // https://reactjs.org/docs/error-boundaries.html
+  // @see https://reactjs.org/docs/error-boundaries.html
   componentDidCatch(error) {
     this.setState({ error });
   }
@@ -48,7 +50,7 @@ class User extends React.Component {
     }
 
     return (
-      <Async await={this.state.promise}>
+      <Async await={getUser(this.props.id)}>
         {user => (user ? <div>Hello {user.name}!</div> : <div>Loading...</div>)}
       </Async>
     );
