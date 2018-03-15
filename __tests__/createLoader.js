@@ -7,6 +7,11 @@ const mount = element => ReactDOM.render(element, mountNode);
 
 const Loader = createLoader(props => props.promise, props => props.promise);
 
+test("has default resolver", () => {
+  const Test = createLoader(() => null);
+  expect(() => mount(<Test />)).not.toThrowError();
+});
+
 test("renders (default)", () => {
   expect(() => mount(<Loader />)).not.toThrowError();
 });

@@ -1,7 +1,9 @@
 import React from "react";
 import Async from "./Async";
 
-export default function createLoader(loader, resolver) {
+function noop() {}
+
+export default function createLoader(loader, resolver = noop) {
   return class Loader extends React.Component {
     state = {};
 
