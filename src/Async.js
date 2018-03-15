@@ -1,8 +1,18 @@
 import React from "react";
 
+const isPromise = promise => promise && typeof promise.then === "function";
+
 const cache = new WeakMap();
 
 const getCachedState = promise => {
+  if (!isPromise(promise)) {
+    return {
+      status: 1,
+      value: promise,
+      error: undefined
+    };
+  }
+
   if (!cache.has(promise)) {
     const result = {
       status: 0,
@@ -43,10 +53,12 @@ class Async extends React.Component {
       subscribed = false;
     };
 
-    this.props.await.then(
-      () => subscribed && this.componentWillMount(),
-      () => subscribed && this.componentWillMount()
-    );
+    if (this.state.status === 0) {
+      this.props.await.then(
+        () => subscribed && this.componentWillMount(),
+        () => subscribed && this.componentWillMount()
+      );
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -73,7 +85,6 @@ class Async extends React.Component {
 }
 
 Async.defaultProps = {
-  await: Promise.resolve(),
   children: () => null
 };
 
