@@ -73,6 +73,7 @@ class Async extends React.Component {
 }
 
 Async.defaultProps = {
+  await: Promise.resolve(),
   children: () => null
 };
 

@@ -19,10 +19,14 @@ afterEach(() => {
   ReactDOM.unmountComponentAtNode(mountNode);
 });
 
+test("renders", () => {
+  expect(() => mount(<Async />)).not.toThrowError();
+});
+
 test("throws error if not passed a promise", () => {
   const onError = jest.fn();
 
-  [1, {}, [], undefined, null].forEach(notPromise => {
+  [1, {}, [], null].forEach(notPromise => {
     mount(
       <ErrorBoundary onError={onError}>
         <Async await={notPromise} />
@@ -30,7 +34,7 @@ test("throws error if not passed a promise", () => {
     );
   });
 
-  expect(onError).toHaveBeenCalledTimes(5);
+  expect(onError).toHaveBeenCalledTimes(4);
 });
 
 test("resolves promise", async () => {
