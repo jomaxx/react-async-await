@@ -8,7 +8,6 @@ function getCachedState(promise) {
   if (!isPromise) {
     return {
       status: 1,
-      promise: undefined,
       value: promise,
       error: undefined
     };
@@ -17,21 +16,18 @@ function getCachedState(promise) {
   if (!cache.has(promise)) {
     const result = {
       status: 0,
-      promise: undefined,
       value: undefined,
       error: undefined
     };
 
-    result.promise = promise.then(
+    promise.then(
       value => {
         result.status = 1;
-        result.promise = undefined;
         result.value = value;
         return value;
       },
       error => {
         result.status = 2;
-        result.promise = undefined;
         result.error = error;
         return Promise.reject(error);
       }
@@ -64,7 +60,7 @@ class Async extends React.Component {
     };
 
     if (this.state.status === 0) {
-      this.state.promise.then(
+      this.props.await.then(
         () => subscribed && this.componentWillMount(),
         error =>
           subscribed ? this.componentWillMount() : Promise.reject(error)
