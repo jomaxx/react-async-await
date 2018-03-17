@@ -18,7 +18,8 @@
   "scripts": {
     "test": "jest -ci",
     "build": "rm -rf lib && rollup -c",
-    "readme": "jsdoc2md --template README.hbs --files src/index.js > README.md",
+    "readme":
+      "jsdoc2md --template README.hbs --files src/index.js > README.md && prettier --write README.md && git add README.md",
     "precommit": "yarn readme && lint-staged",
     "prepublishOnly": "yarn readme && yarn build && yarn test"
   },
