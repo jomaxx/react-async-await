@@ -1,9 +1,6 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { mount } from "testUtils";
 import { Async } from "../";
-
-const mountNode = document.body.appendChild(document.createElement("div"));
-const mount = element => ReactDOM.render(element, mountNode);
 
 class ErrorBoundary extends React.Component {
   componentDidCatch(error) {
@@ -14,10 +11,6 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
-
-afterEach(() => {
-  ReactDOM.unmountComponentAtNode(mountNode);
-});
 
 test("renders (default)", () => {
   expect(() => mount(<Async />)).not.toThrowError();
@@ -45,7 +38,7 @@ test("resolves promise", async () => {
 
   await promise;
 
-  expect(render.mock.calls).toEqual([[], [1]]);
+  expect(render.mock.calls).toEqual([[undefined], [1]]);
 });
 
 test("ignores previous promise", async () => {
@@ -59,7 +52,7 @@ test("ignores previous promise", async () => {
 
   await Promise.all([promise, promise2]);
 
-  expect(render.mock.calls).toEqual([[], [], [2]]);
+  expect(render.mock.calls).toEqual([[undefined], [undefined], [2]]);
 });
 
 test("catches error in error boundary", done => {
@@ -89,6 +82,6 @@ test("skips loading if previously resolved", async () => {
 
   mount(<Async await={promise}>{renderB}</Async>);
 
-  expect(renderA.mock.calls).toEqual([[], [1]]);
+  expect(renderA.mock.calls).toEqual([[undefined], [1]]);
   expect(renderB.mock.calls).toEqual([[1]]);
 });

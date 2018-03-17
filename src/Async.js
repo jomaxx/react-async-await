@@ -1,13 +1,14 @@
 import React from "react";
 
-const isPromise = promise => promise && typeof promise.then === "function";
-
 const cache = new WeakMap();
 
-const getCachedState = promise => {
-  if (!isPromise(promise)) {
+function getCachedState(promise) {
+  const isPromise = promise && typeof promise.then === "function";
+
+  if (!isPromise) {
     return {
       status: 1,
+      promise: undefined,
       value: promise,
       error: undefined
     };
@@ -16,18 +17,23 @@ const getCachedState = promise => {
   if (!cache.has(promise)) {
     const result = {
       status: 0,
+      promise: undefined,
       value: undefined,
       error: undefined
     };
 
-    promise.then(
+    result.promise = promise.then(
       value => {
         result.status = 1;
+        result.promise = undefined;
         result.value = value;
+        return value;
       },
       error => {
         result.status = 2;
+        result.promise = undefined;
         result.error = error;
+        return Promise.reject(error);
       }
     );
 
@@ -35,9 +41,13 @@ const getCachedState = promise => {
   }
 
   return cache.get(promise);
-};
+}
 
 class Async extends React.Component {
+  static defaultProps = {
+    children: () => null
+  };
+
   componentWillMount() {
     this.setState(getCachedState(this.props.await));
   }
@@ -54,9 +64,10 @@ class Async extends React.Component {
     };
 
     if (this.state.status === 0) {
-      this.props.await.then(
+      this.state.promise.then(
         () => subscribed && this.componentWillMount(),
-        () => subscribed && this.componentWillMount()
+        error =>
+          subscribed ? this.componentWillMount() : Promise.reject(error)
       );
     }
   }
@@ -73,7 +84,8 @@ class Async extends React.Component {
 
     switch (status) {
       case 0:
-        return this.props.children();
+      // @todo support suspense
+      // throw this.props.await;
       case 1:
         return this.props.children(value);
       case 2:
@@ -83,9 +95,5 @@ class Async extends React.Component {
     }
   }
 }
-
-Async.defaultProps = {
-  children: () => null
-};
 
 export default Async;

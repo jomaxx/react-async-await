@@ -1,9 +1,6 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { mount } from "testUtils";
 import { createLoader } from "../";
-
-const mountNode = document.body.appendChild(document.createElement("div"));
-const mount = element => ReactDOM.render(element, mountNode);
 
 const Loader = createLoader(props => props.promise, props => props.promise);
 
@@ -24,7 +21,7 @@ test("loads promise", async () => {
 
   await a;
 
-  expect(render.mock.calls).toEqual([[], [1]]);
+  expect(render.mock.calls).toEqual([[undefined], [undefined], [1]]);
 });
 
 test("resolves to new promise", async () => {
@@ -37,5 +34,10 @@ test("resolves to new promise", async () => {
 
   await Promise.all([a, b]);
 
-  expect(render.mock.calls).toEqual([[], [], [2]]);
+  expect(render.mock.calls).toEqual([
+    [undefined],
+    [undefined],
+    [undefined],
+    [2]
+  ]);
 });

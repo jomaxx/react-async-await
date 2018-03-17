@@ -1,19 +1,24 @@
 import babel from "rollup-plugin-babel";
-import packageJson from "./package.json";
+import pkg from "./package.json";
 
 export default {
   input: require.resolve("./src"),
 
   output: [
     {
-      file: packageJson.main,
+      file: pkg.main,
       format: "cjs"
     },
-    packageJson.module && {
-      file: packageJson.module,
+    pkg.module && {
+      file: pkg.module,
       format: "es"
     }
   ].filter(Boolean),
+
+  external: [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.peerDependencies || {})
+  ],
 
   plugins: [babel()]
 };
