@@ -24,12 +24,10 @@ function getCachedState(promise) {
       value => {
         result.status = 1;
         result.value = value;
-        return value;
       },
       error => {
         result.status = 2;
         result.error = error;
-        return Promise.reject(error);
       }
     );
 
