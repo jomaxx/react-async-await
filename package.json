@@ -18,8 +18,9 @@
   "scripts": {
     "test": "jest -ci",
     "build": "rm -rf lib && rollup -c",
-    "precommit": "lint-staged",
-    "prepublishOnly": "yarn build && yarn test"
+    "readme": "jsdoc2md --template README.hbs --files src/index.js > README.md",
+    "precommit": "yarn readme && lint-staged",
+    "prepublishOnly": "yarn readme && yarn build && yarn test"
   },
   "lint-staged": {
     "*.{js,json,md,babelrc}": ["prettier --write", "git add"],
@@ -33,6 +34,7 @@
     "babel-preset-react": "^6.24.1",
     "husky": "^0.14.3",
     "jest": "^22.4.2",
+    "jsdoc-to-markdown": "^4.0.1",
     "lint-staged": "^7.0.0",
     "prettier": "^1.11.1",
     "react": "^16.2.0",

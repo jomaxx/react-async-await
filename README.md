@@ -1,3 +1,5 @@
+<!-- Generated from README.hbs using jsdoc2md -->
+
 # react-async-await
 
 Async component that waits on promises to resolve!
@@ -12,179 +14,153 @@ Creating a promise is a synchronous action. If you hold a reference to a promise
 yarn add react-async-await react
 ```
 
-## Async Component
+<a name="module_ReactAsyncAwait"></a>
 
-The `Async` component
+## ReactAsyncAwait
 
-* throws uncaught promise rejections so they can be handled by an [error boundary](https://reactjs.org/docs/error-boundaries.html)
-* injects render callback with resolved value
-* renders synchronously if the promise was already resolved by the Async component
-* prevents race conditions when props change and components unmount
+* [ReactAsyncAwait](#module_ReactAsyncAwait)
+  * [~Async](#module_ReactAsyncAwait..Async) ⇒ <code>ReactElement</code>
+  * [~createLoader(loader, [resolver])](#module_ReactAsyncAwait..createLoader) ⇒ <code>ReactComponent</code>
+
+<a name="module_ReactAsyncAwait..Async"></a>
+
+### ReactAsyncAwait~Async ⇒ <code>ReactElement</code>
+
+Component that takes a promise and injects the render callback with the resolved value.
+
+**Kind**: inner property of [<code>ReactAsyncAwait</code>](#module_ReactAsyncAwait)  
+**Extends**: <code>ReactComponent</code>
+
+| Param         | Type                |
+| ------------- | ------------------- |
+| props         | <code>object</code> |
+| [props.await] | <code>\*</code>     |
+
+**Example**
 
 ```js
 import React from "react";
 import ReactDOM from "react-dom";
 import { Async } from "react-async-await";
 
-const getUser = id =>
-  fetch(`/api/users/${id}`).then(response => response.json());
-
-class User extends React.Component {
+class LoadUser extends React.Component {
   componentWillMount() {
     this.setState({
-      promise: undefined,
-      error: undefined
+      error: undefined,
+      promise: undefined
     });
   }
 
   componentDidMount() {
     this.setState({
-      promise: getUser(this.props.id)
+      promise: fetch(`/api/users/${this.props.id}`).then(r => r.json())
     });
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.id !== nextProps.id) {
       this.setState({
-        promise: getUser(nextProps.id),
-        error: undefined
+        error: undefined,
+        promise: fetch(`/api/users/${nextProps.id}`).then(r => r.json())
       });
     }
   }
 
-  // If this.state.promise rejects then Async component will throw error.
-  // Error Boundaries allow you to recover from thrown errors.
-  // @see https://reactjs.org/docs/error-boundaries.html
   componentDidCatch(error) {
     this.setState({ error });
   }
 
   render() {
-    if (this.state.error) {
-      return <div>An error occurred!</div>;
-    }
-
-    return (
-      <Async await={this.state.promise}>
-        {user => (user ? <div>Hello {user.name}!</div> : <div>Loading...</div>)}
-      </Async>
+    return this.state.error ? (
+      <div>Uncaught promise rejection: {this.state.error.message}</div>
+    ) : (
+      <Async await={this.state.promise}>{this.props.children}</Async>
     );
   }
 }
 
-ReactDOM.render(<User id={1} />, document.getElementById("root"));
+ReactDOM.render(
+  <LoadUser id={1}>
+    {user =>
+      typeof user === undefined ? (
+        <div>Loading...</div>
+      ) : (
+        <h1>Hello {user.name}!</h1>
+      )
+    }
+  </LoadUser>,
+  document.getElementById("root")
+);
 ```
 
-## createLoader Factory
+<a name="module_ReactAsyncAwait..createLoader"></a>
+
+### ReactAsyncAwait~createLoader(loader, [resolver]) ⇒ <code>ReactComponent</code>
 
 Create a wrapper component around `Async` that maps props to a promise when the component mounts.
 
+**Kind**: inner method of [<code>ReactAsyncAwait</code>](#module_ReactAsyncAwait)
+
+| Param      | Type                  | Description                    |
+| ---------- | --------------------- | ------------------------------ |
+| loader     | <code>function</code> | loader maps props to a promise |
+| [resolver] | <code>function</code> | resolver maps props to a key   |
+
+**Example**
+
 ```js
 import React from "react";
 import ReactDOM from "react-dom";
 import { createLoader } from "react-async-await";
 
-const getUser = id => fetch(`/api/users/${id}`).then(response => response.json());
-
 const LoadUser = createLoader(
-  props => getUser(props.id)), // loader
-  props => props.id, // resolver
+  props => fetch(`/api/users/${props.id}`).then(r => r.json()),
+  props => props.id // when key changes the loader is called again
 );
 
-class User extends React.Component {
-  componentWillMount() {
-    this.setState({
-      error: undefined
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.id !== nextProps.id) {
-      this.setState({
-        error: undefined
-      });
+ReactDOM.render(
+  <LoadUser id={1}>
+    {user =>
+      typeof user === undefined ? (
+        <div>Loading...</div>
+      ) : (
+        <h1>Hello {user.name}!</h1>
+      )
     }
-  }
-
-  // If this.state.promise rejects then Async component will throw error.
-  // Error Boundaries allow you to recover from thrown errors.
-  // @see https://reactjs.org/docs/error-boundaries.html
-  componentDidCatch(error) {
-    this.setState({ error });
-  }
-
-  render() {
-    if (this.state.error) {
-      return <div>An error occurred!</div>;
-    }
-
-    return (
-      <LoadUser id={this.props.id}>
-        {user => (user ? <div>Hello {user.name}!</div> : <div>Loading...</div>)}
-      </LoadUser>
-    );
-  }
-}
-
-ReactDOM.render(<User id={1} />, document.getElementById("root"));
+  </LoadUser>,
+  document.getElementById("root")
+);
 ```
 
-## Caching
-
-Coupling the `Async` component or `createLoader` factory with a promise cache can be extremely powerful. Instead of creating a new promise every time your component receives props, you can resolve to a cached promise by using techniques like memoization. Below is an example using [`lodash/memoize`](https://lodash.com/docs/4.17.5#memoize).
+**Example** _(memoized loader)_
 
 ```js
 import React from "react";
 import ReactDOM from "react-dom";
 import { createLoader } from "react-async-await";
+// https://lodash.com/docs/4.17.5#memoize
 import memoize from "lodash/memoize";
 
-// will return same promise when passed same id
-// @see https://lodash.com/docs/4.17.5#memoize
-const getUser = memoize(
-  id => fetch(`/api/users/${id}`).then(response => response.json()),
-  id => id,
+const loader = memoize(
+  props => fetch(`/api/users/${props.id}`).then(r => r.json()),
+  props => props.id // key is used to resolve to cached value
 );
 
 const LoadUser = createLoader(
-  props => getUser(props.id)), // loader
-  props => props.id, // resolver
+  loader,
+  props => props.id // when key changes the loader is called again
 );
 
-class User extends React.Component {
-  componentWillMount() {
-    this.setState({
-      error: undefined
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.id !== nextProps.id) {
-      this.setState({
-        error: undefined
-      });
+ReactDOM.render(
+  <LoadUser id={1}>
+    {user =>
+      typeof user === undefined ? (
+        <div>Loading...</div>
+      ) : (
+        <h1>Hello {user.name}!</h1>
+      )
     }
-  }
-
-  // If this.state.promise rejects then Async component will throw error.
-  // Error Boundaries allow you to recover from thrown errors.
-  // @see https://reactjs.org/docs/error-boundaries.html
-  componentDidCatch(error) {
-    this.setState({ error });
-  }
-
-  render() {
-    if (this.state.error) {
-      return <div>An error occurred!</div>;
-    }
-
-    return (
-      <LoadUser id={this.props.id}>
-        {user => (user ? <div>Hello {user.name}!</div> : <div>Loading...</div>)}
-      </LoadUser>
-    );
-  }
-}
-
-ReactDOM.render(<User id={1} />, document.getElementById("root"));
+  </LoadUser>,
+  document.getElementById("root")
+);
 ```

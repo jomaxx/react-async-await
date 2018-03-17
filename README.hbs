@@ -1,0 +1,17 @@
+<!-- Generated from README.hbs using jsdoc2md -->
+
+# react-async-await
+
+Async component that waits on promises to resolve!
+
+## Motivation
+
+Creating a promise is a synchronous action. If you hold a reference to a promise, you can eventually get the future value that it resolves to. Calling `setState` asynchronously in a component can cause a lot of headaches because of race conditions. The promise could still be in a pending state when the component unmounts or the props change. The `Async` component allows you to never worry about these race conditions and enables you to write your asynchronous react code as if it was synchronous.
+
+## Install
+
+```
+yarn add react-async-await react
+```
+
+{{>main}}
