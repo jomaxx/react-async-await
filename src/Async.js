@@ -60,8 +60,7 @@ class Async extends React.Component {
     if (this.state.status === 0) {
       this.props.await.then(
         () => subscribed && this.componentWillMount(),
-        error =>
-          subscribed ? this.componentWillMount() : Promise.reject(error)
+        error => subscribed && this.componentWillMount()
       );
     }
   }
