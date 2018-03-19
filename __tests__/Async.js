@@ -55,7 +55,7 @@ test("ignores previous promise", async () => {
   expect(render.mock.calls).toEqual([[undefined], [undefined], [2]]);
 });
 
-test("catches error in error boundary", done => {
+test("catches error in error boundary when no catch prop is present", done => {
   const error = new Error("test");
   const onError = jest.fn();
 
@@ -68,6 +68,30 @@ test("catches error in error boundary", done => {
     >
       <Async await={Promise.reject(error)}>{value => null}</Async>
     </ErrorBoundary>
+  );
+});
+
+test("receives the error on the catch prop function", done => {
+  expect.assertions(2);
+
+  const error = new Error("test");
+
+  mount(
+    <Async
+      await={Promise.reject(error)}
+      catch={caught => {
+        expect(caught).toEqual(error);
+        return caught;
+      }}
+    >
+      {value => {
+        if (value) {
+          expect(value).toEqual(error);
+          done();
+        }
+        return null;
+      }}
+    </Async>
   );
 });
 
