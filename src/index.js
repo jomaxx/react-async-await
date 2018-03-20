@@ -63,6 +63,10 @@
  * @extends ReactComponent
  * @param {object} props
  * @param {*} [props.await]
+ * @param {function} [props.waiting] - map promise to value
+ * @param {function} [props.then] - map result to value
+ * @param {function} [props.catch] - map error to value (default throws error)
+ * @param {function} [props.children] - render callback
  * @return {ReactElement}
  */
 export { default as Async } from "./Async";

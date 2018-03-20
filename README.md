@@ -31,10 +31,14 @@ Component that takes a promise and injects the render callback with the resolved
 **Kind**: inner property of [<code>ReactAsyncAwait</code>](#module_ReactAsyncAwait)  
 **Extends**: <code>ReactComponent</code>
 
-| Param         | Type                |
-| ------------- | ------------------- |
-| props         | <code>object</code> |
-| [props.await] | <code>\*</code>     |
+| Param            | Type                  | Description                               |
+| ---------------- | --------------------- | ----------------------------------------- |
+| props            | <code>object</code>   |                                           |
+| [props.await]    | <code>\*</code>       |                                           |
+| [props.waiting]  | <code>function</code> | map promise to value                      |
+| [props.then]     | <code>function</code> | map result to value                       |
+| [props.catch]    | <code>function</code> | map error to value (default throws error) |
+| [props.children] | <code>function</code> | render callback                           |
 
 **Example**
 

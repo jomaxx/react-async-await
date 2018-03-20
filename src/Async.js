@@ -8,30 +8,30 @@ function getCachedState(promise) {
   if (!isPromise) {
     return {
       status: 1,
-      value: promise,
+      result: promise,
       error: undefined
     };
   }
 
   if (!cache.has(promise)) {
-    const result = {
+    const cached = {
       status: 0,
-      value: undefined,
+      result: undefined,
       error: undefined
     };
 
     promise.then(
-      value => {
-        result.status = 1;
-        result.value = value;
+      result => {
+        cached.status = 1;
+        cached.result = result;
       },
       error => {
-        result.status = 2;
-        result.error = error;
+        cached.status = 2;
+        cached.error = error;
       }
     );
 
-    cache.set(promise, result);
+    cache.set(promise, cached);
   }
 
   return cache.get(promise);
@@ -39,7 +39,22 @@ function getCachedState(promise) {
 
 class Async extends React.Component {
   static defaultProps = {
-    children: () => null
+    children() {
+      return null;
+    },
+
+    waiting(promise) {
+      // @todo support suspense by default
+      // throw promise;
+    },
+
+    then(result) {
+      return result;
+    },
+
+    catch(error) {
+      throw error;
+    }
   };
 
   componentWillMount() {
@@ -60,7 +75,7 @@ class Async extends React.Component {
     if (this.state.status === 0) {
       this.props.await.then(
         () => subscribed && this.componentWillMount(),
-        error => subscribed && this.componentWillMount()
+        () => subscribed && this.componentWillMount()
       );
     }
   }
@@ -73,20 +88,15 @@ class Async extends React.Component {
   }
 
   render() {
-    const { status, value, error } = this.state;
+    const { status, result, error } = this.state;
 
     switch (status) {
       case 0:
-      // @todo support suspense
-      // throw this.props.await;
+        return this.props.children(this.props.waiting(this.props.await));
       case 1:
-        return this.props.children(value);
+        return this.props.children(this.props.then(result));
       case 2:
-        if (this.props.catch) {
-          return this.props.children(this.props.catch(error));
-        }
-
-        throw error;
+        return this.props.children(this.props.catch(error));
       default:
         throw new Error("unknown status");
     }
