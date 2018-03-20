@@ -1,6 +1,6 @@
 import React from "react";
 import { mount } from "testUtils";
-import { Async } from "../";
+import { Async } from "react-async-await";
 
 class ErrorBoundary extends React.Component {
   componentDidCatch(error) {

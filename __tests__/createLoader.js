@@ -1,6 +1,6 @@
 import React from "react";
 import { mount } from "testUtils";
-import { createLoader } from "../";
+import { createLoader } from "react-async-await";
 
 const Loader = createLoader(props => props.promise, props => props.promise);
 
